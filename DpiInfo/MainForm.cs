@@ -52,6 +52,8 @@ namespace DpiInfo {
             // Get this process
             Process currentProcess = Process.GetCurrentProcess();
             sb.Append(getProcessInfo(currentProcess));
+            sb.AppendLine("  Bounds: X=" + Bounds.Left + " Y=" + Bounds.Top
+               + " Size: " + Bounds.Width + " x " + Bounds.Height);
             sb.AppendLine();
 
             // Get all processes running on the local computer.
@@ -95,12 +97,15 @@ namespace DpiInfo {
             if (!GetWindowRect(new HandleRef(this, process.MainWindowHandle), out rect)) {
                 sb.AppendLine("  GetWindowRect failed");
             } else {
-                int x = rect.Left;
-                int y = rect.Top;
-                int width = rect.Right - rect.Left;
-                int height = rect.Bottom - rect.Top;
-                sb.AppendLine("  Window: X=" + x + " Y=" + y
-                    + " Size: " + width + " x " + height);
+                Rectangle rectangle = new Rectangle();
+                rectangle.X = rect.Left;
+                rectangle.Y = rect.Top;
+                rectangle.Width = rect.Right - rect.Left;
+                rectangle.Height = rect.Bottom - rect.Top;
+                sb.AppendLine("  Window: X=" + rectangle.Left + " Y=" + rectangle.Top
+                    + " Size: " + rectangle.Width + " x " + rectangle.Height);
+                sb.AppendLine("  Window: Left=" + rect.Left + " Right=" + rect.Right
+                    + " Top=" + rect.Top + " Bottom=" + rect.Bottom);
             }
 
             // Dpi awareness
