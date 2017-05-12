@@ -13,29 +13,6 @@ using System.Windows.Forms;
 namespace DpiInfo {
     public partial class MainForm : Form {
 
-        // External Windows functions
-        private const int S_OK = 0;
-        private enum PROCESS_DPI_AWARENESS {
-            PROCESS_DPI_UNAWARE = 0,
-            PROCESS_SYSTEM_DPI_AWARE = 1,
-            PROCESS_PER_MONITOR_DPI_AWARE = 2
-        }
-
-        [DllImport("Shcore.dll")]
-        private static extern int GetProcessDpiAwareness(IntPtr hprocess, out PROCESS_DPI_AWARENESS value);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetWindowRect(HandleRef hWnd, out RECT lpRect);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT {
-            public int Left;        // x position of upper-left corner
-            public int Top;         // y position of upper-left corner
-            public int Right;       // x position of lower-right corner
-            public int Bottom;      // y position of lower-right corner
-        }
-
         public MainForm() {
             InitializeComponent();
         }
@@ -93,8 +70,8 @@ namespace DpiInfo {
                 process.MainWindowHandle.ToString("X8")));
 
             // Main window size
-            RECT rect;
-            if (!GetWindowRect(new HandleRef(this, process.MainWindowHandle), out rect)) {
+            NativeMethods.RECT rect;
+            if (!NativeMethods.GetWindowRect(new HandleRef(this, process.MainWindowHandle), out rect)) {
                 sb.AppendLine("  GetWindowRect failed");
             } else {
                 Rectangle rectangle = new Rectangle();
@@ -109,10 +86,10 @@ namespace DpiInfo {
             }
 
             // Dpi awareness
-            PROCESS_DPI_AWARENESS awareness;
-            int res = GetProcessDpiAwareness(process.Handle,
+            NativeMethods.PROCESS_DPI_AWARENESS awareness;
+            int res = NativeMethods.GetProcessDpiAwareness(process.Handle,
                 out awareness);
-            if (res == S_OK) {
+            if (res == NativeMethods.S_OK) {
                 sb.AppendLine("  DPI Awareness: " + awareness);
             } else {
                 sb.AppendLine("  DPI Awareness failed: res=" + res);
@@ -153,5 +130,33 @@ namespace DpiInfo {
         private void Form1_Activated(object sender, EventArgs e) {
             refresh();
         }
+    }
+
+    /// <summary>
+    /// Class for native methods.
+    /// </summary>
+    internal static class NativeMethods {
+        internal const int S_OK = 0;
+        internal enum PROCESS_DPI_AWARENESS {
+            PROCESS_DPI_UNAWARE = 0,
+            PROCESS_SYSTEM_DPI_AWARE = 1,
+            PROCESS_PER_MONITOR_DPI_AWARE = 2
+        }
+
+        [DllImport("Shcore.dll")]
+        internal static extern int GetProcessDpiAwareness(IntPtr hprocess, out PROCESS_DPI_AWARENESS value);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetWindowRect(HandleRef hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct RECT {
+            public int Left;        // x position of upper-left corner
+            public int Top;         // y position of upper-left corner
+            public int Right;       // x position of lower-right corner
+            public int Bottom;      // y position of lower-right corner
+        }
+
     }
 }
