@@ -94,6 +94,11 @@ namespace DpiInfo {
             } else {
                 sb.AppendLine("  DPI Awareness failed: res=" + res);
             }
+
+            // Dpi
+            int dpi = NativeMethods.GetDpiForWindow(process.Handle);
+            sb.AppendLine("  DPI: " + dpi);
+
             return sb.ToString();
         }
 
@@ -144,7 +149,10 @@ namespace DpiInfo {
         }
 
         [DllImport("Shcore.dll")]
-        internal static extern int GetProcessDpiAwareness(IntPtr hprocess, out PROCESS_DPI_AWARENESS value);
+        internal static extern int GetProcessDpiAwareness(IntPtr hWnd, out PROCESS_DPI_AWARENESS value);
+
+        [DllImport("user32.dll")]
+        internal static extern int GetDpiForWindow(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
