@@ -69,6 +69,21 @@ namespace DpiInfo {
                 process.Handle.ToString("X8"),
                 process.MainWindowHandle.ToString("X8")));
 
+            // 32 or 64 bit
+            if (!Environment.Is64BitOperatingSystem) {
+                sb.AppendLine("  32-bit process");
+            } else {
+                Boolean isWow64;
+                if (!NativeMethods.IsWow64Process(process.Handle, out isWow64)) {
+                    throw new Win32Exception();
+                }
+                if (isWow64) {
+                    sb.AppendLine("  32-bit process");
+                } else {
+                    sb.AppendLine("  64-bit process");
+                }
+            }
+
             // Main window size
             NativeMethods.RECT rect;
             if (!NativeMethods.GetWindowRect(new HandleRef(this, process.MainWindowHandle), out rect)) {
@@ -165,6 +180,10 @@ namespace DpiInfo {
             public int Right;       // x position of lower-right corner
             public int Bottom;      // y position of lower-right corner
         }
+
+        [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
 
     }
 }
