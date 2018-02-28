@@ -110,6 +110,20 @@ namespace DpiInfo {
                 sb.AppendLine("  DPI Awareness failed: res=" + res);
             }
 
+            // Dpi awareness context
+            IntPtr dpiAwarenessContext = NativeMethods.GetWindowDpiAwarenessContext(process.Handle);
+            if (dpiAwarenessContext == (IntPtr)(-1)) {
+                sb.AppendLine("  DPI Awareness Context: DPI_AWARENESS_CONTEXT_UNAWARE");
+            } else if (dpiAwarenessContext == (IntPtr)(-2)) {
+                sb.AppendLine("  DPI Awareness Context: DPI_AWARENESS_CONTEXT_SYSTEM_AWARE");
+            } else if (dpiAwarenessContext == (IntPtr)(-3)) {
+                sb.AppendLine("  DPI Awareness Context: DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE");
+            } else if (dpiAwarenessContext == (IntPtr)(-4)) {
+                sb.AppendLine("  DPI Awareness Context: DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2");
+            } else {
+                sb.AppendLine("  DPI Awareness Context failed: " + dpiAwarenessContext);
+            }
+
             // Dpi
             int dpi = NativeMethods.GetDpiForWindow(process.Handle);
             sb.AppendLine("  DPI: " + dpi);
@@ -169,6 +183,7 @@ namespace DpiInfo {
     internal static class NativeMethods {
         internal const int S_OK = 0;
         internal enum PROCESS_DPI_AWARENESS {
+            DPI_AWARENESS_INVALID = -1,
             PROCESS_DPI_UNAWARE = 0,
             PROCESS_SYSTEM_DPI_AWARE = 1,
             PROCESS_PER_MONITOR_DPI_AWARE = 2
@@ -179,6 +194,9 @@ namespace DpiInfo {
 
         [DllImport("user32.dll")]
         internal static extern int GetDpiForWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetWindowDpiAwarenessContext(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
