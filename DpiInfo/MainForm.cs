@@ -150,6 +150,17 @@ namespace DpiInfo {
         private void Form1_Activated(object sender, EventArgs e) {
             refresh();
         }
+
+#if false
+        private void onTestClick(object sender, EventArgs e) {
+        SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "Configuration Files|*.config";
+            dlg.Title = "Select a Configuration File";
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                
+            }
+        }
+#endif
     }
 
     /// <summary>
