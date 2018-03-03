@@ -111,7 +111,7 @@ namespace DpiInfo {
             }
 
             // Dpi awareness context
-            IntPtr dpiAwarenessContext = NativeMethods.GetWindowDpiAwarenessContext(process.Handle);
+            IntPtr dpiAwarenessContext = NativeMethods.GetWindowDpiAwarenessContext(process.MainWindowHandle);
             if (dpiAwarenessContext == (IntPtr)(-1)) {
                 sb.AppendLine("  DPI Awareness Context: DPI_AWARENESS_CONTEXT_UNAWARE");
             } else if (dpiAwarenessContext == (IntPtr)(-2)) {
@@ -125,7 +125,7 @@ namespace DpiInfo {
             }
 
             // Dpi
-            int dpi = NativeMethods.GetDpiForWindow(process.Handle);
+            int dpi = NativeMethods.GetDpiForWindow(process.MainWindowHandle);
             sb.AppendLine("  DPI: " + dpi);
 
             return sb.ToString();
@@ -189,7 +189,7 @@ namespace DpiInfo {
             PROCESS_PER_MONITOR_DPI_AWARE = 2
         }
 
-        [DllImport("Shcore.dll")]
+        [DllImport("SHcore.dll")]
         internal static extern int GetProcessDpiAwareness(IntPtr hWnd, out PROCESS_DPI_AWARENESS value);
 
         [DllImport("user32.dll")]
@@ -197,6 +197,9 @@ namespace DpiInfo {
 
         [DllImport("user32.dll")]
         internal static extern IntPtr GetWindowDpiAwarenessContext(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -213,6 +216,5 @@ namespace DpiInfo {
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
-
     }
 }
