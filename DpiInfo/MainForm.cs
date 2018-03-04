@@ -183,7 +183,6 @@ namespace DpiInfo {
     internal static class NativeMethods {
         internal const int S_OK = 0;
         internal enum PROCESS_DPI_AWARENESS {
-            DPI_AWARENESS_INVALID = -1,
             PROCESS_DPI_UNAWARE = 0,
             PROCESS_SYSTEM_DPI_AWARE = 1,
             PROCESS_PER_MONITOR_DPI_AWARE = 2
