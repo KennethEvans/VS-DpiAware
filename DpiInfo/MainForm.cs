@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace DpiInfo {
     public partial class MainForm : Form {
@@ -31,6 +32,11 @@ namespace DpiInfo {
             sb.Append(getProcessInfo(currentProcess));
             //sb.AppendLine("  Bounds: X=" + Bounds.Left + " Y=" + Bounds.Top
             //   + " Size: " + Bounds.Width + " x " + Bounds.Height);
+            sb.AppendLine();
+
+            // PreferExternalManifest
+            sb.AppendLine("PreferExternalManifest:");
+            sb.AppendLine(getPreferExternalManifest());
             sb.AppendLine();
 
             // Get all processes running on the local computer.
@@ -140,6 +146,36 @@ namespace DpiInfo {
             sb.AppendLine("  DPI Awareness: " + dpiAwareness);
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Get the value of HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\SideBySide
+        /// </summary>
+        /// <returns></returns>
+        private string getPreferExternalManifest() {
+            const string hive = @"HKEY_LOCAL_MACHINE\";
+            const string subKeyName = @"SOFTWARE\Microsoft\Windows\CurrentVersion\SideBySide";
+            const string valueName = "PreferExternalManifest";
+            try {
+                RegistryKey baseKey;
+                if (Environment.Is64BitOperatingSystem) {
+                    baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                } else {
+                    baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+                }
+                RegistryKey regKey = baseKey.OpenSubKey(subKeyName, false);
+                if (regKey == null) {
+                    return "Key does not exist: " + hive + subKeyName;
+                }
+                var value = regKey.GetValue(valueName);
+                if (value == null) {
+                    return "Name/Value pair does not exist: " + hive + subKeyName + @"\" + valueName;
+                }
+                return hive + subKeyName + @"\" + valueName + "=" + value;
+            } catch (Exception ex) {
+                return "Error getting " + hive + subKeyName + @"\" + valueName + "\n"
+                    + ex.Message;
+            }
         }
 
         /// <summary>
