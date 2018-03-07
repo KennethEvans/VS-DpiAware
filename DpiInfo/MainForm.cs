@@ -1,4 +1,6 @@
-﻿using System;
+﻿#undef doLogging
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,9 +15,35 @@ using Microsoft.Win32;
 
 namespace DpiInfo {
     public partial class MainForm : Form {
+        private bool doScale = false;
+        private float currentDpi = 0;
+        private float initialDpi;
+        private float previousDpi;
+        private Font initialFont;
+        private Size initialSize;
+#if doLogging
+        private Logger logger;
+#endif
 
         public MainForm() {
             InitializeComponent();
+
+#if doLogging
+            logger = new Logger();
+            logger.ControlList = new Control[] {
+                this,tableLayoutPanelTop, textBox3, textBox4, textBox5,
+            };
+            logger.logControlsLabels();
+#endif
+            initialDpi = currentDpi = previousDpi = getDpiFromGraphics();
+            initialFont = Font;
+            initialSize = ClientSize;
+#if doLogging
+            logger.log("After InitializeComponent prevDpi=" + previousDpi
+               + " curDpi=" + currentDpi);
+            logger.logControls("After InitializeComponent initialSize="
+                + initialSize.ToString());
+#endif
         }
 
         /// <summary>
@@ -239,7 +267,7 @@ namespace DpiInfo {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Form1_Activated(object sender, EventArgs e) {
+        private void MainForm_Activated(object sender, EventArgs e) {
             refresh();
         }
 
@@ -253,6 +281,141 @@ namespace DpiInfo {
             }
         }
 #endif
+        ////////////////////// Code to implement PerMonitor Scaling ///////////////
+
+        /// <summary>
+        ///  Gets the current dpi. This seems to be independent of the screen.
+        /// </summary>
+        /// <returns></returns>
+        private float getDpiFromGraphics() {
+            Graphics g = this.CreateGraphics();
+            float dpi = g.DpiY;
+            g.Dispose();
+            return dpi;
+        }
+
+        /// <summary>
+        /// Rescales.  Only used for dpiAware=true/pm.
+        /// </summary>
+        private void rescale() {
+#if doLogging
+            logger.log("rescale prevDpi=" + previousDpi
+                + " curDpi=" + currentDpi);
+            logger.logControls("rescale (Before) ClientSize=" + ClientSize.ToString());
+#endif
+            if (previousDpi == 0 || currentDpi == 0) return;
+            if (initialFont != null) {
+                float size = initialFont.SizeInPoints * currentDpi / initialDpi;
+                Font = new Font(initialFont.Name, size);
+            }
+            float scale = currentDpi / previousDpi;
+#if false
+            // Doesn't work
+            Scale(new SizeF(scale, scale));
+#elif false
+            // Doesn't work similar to above
+            int width = (int)Math.Round(ClientSize.Width * currentDpi / previousDpi);
+            int height = (int)Math.Round(ClientSize.Height * currentDpi / previousDpi);
+#elif true
+            int width = (int)Math.Round(initialSize.Width * currentDpi / initialDpi);
+            int height = (int)Math.Round(initialSize.Height * currentDpi / initialDpi);
+            ClientSize = new Size(width, height);
+#endif
+#if doLogging
+            logger.logControls("rescale (After) ClientSize=" + ClientSize.ToString());
+#endif
+        }
+
+        /// <summary>
+        /// Overriden WndProc to get WM_DPICHANGED messages.  There will not
+        /// be any except for dpiAware=true/pm.  Calls the base version at the 
+        /// end. An alternative is to use DefWndProc. DefWndProc is called by
+        /// WndProc if the message is not handled by WndProc.
+
+        /// </summary>
+        /// <param name="m"></param>
+        protected override void WndProc(ref Message m) {
+            switch (m.Msg) {
+                // This message is sent when the form is dragged to a different
+                // monitor i.e. when the bigger part of its are is on the new
+                // monitor. Note that handling the message immediately
+                // might change the size of the form so that it no longer
+                // overlaps the new monitor in its bigger part which in turn
+                // will send again the WM_DPICHANGED message and this might
+                // cause misbehavior. Therefore we delay the scaling if the form
+                // is being moved and we use the CanPerformScaling method to 
+                //  check if it is safe to perform the scaling.
+                case 0x02E0: // WM_DPICHANGED
+                    {
+#if doLogging
+                        logger.log("WM_DPICHANGED");
+#endif
+                        int newDpi = m.WParam.ToInt32() & 0xFFFF;
+                        previousDpi = currentDpi;
+                        currentDpi = newDpi;
+                        doScale = true;
+                        //rescale();
+                    }
+                    break;
+                case 0x0081:  // WM_NCCREATE
+                    {
+#if doLogging
+                        logger.log("WM_NCCREATE");
+#endif
+                        NativeMethods.EnableNonClientDpiScaling(this.Handle);
+                    }
+                    break;
+            }
+            base.WndProc(ref m);
+        }
+
+        // External Windows functions
+
+
+        // Event handlers
+
+        private void MainForm_ResizeBegin(object sender, EventArgs e) {
+#if doLogging
+            logger.logControls("MainForm_ResizeBegin initialSize="
+                + initialSize.ToString());
+#endif
+        }
+
+        private void MainForm_ResizeEnd(object sender, EventArgs e) {
+#if doLogging
+            logger.logControls("MainForm_ResizeEnd (before," + doScale
+                + ") initialSize=" + initialSize.ToString());
+#endif
+            if (doScale) {
+                doScale = false;
+                rescale();
+            } else {
+                int width = (int)Math.Round(ClientSize.Width * initialDpi
+                    / currentDpi);
+                int height = (int)Math.Round(ClientSize.Height * initialDpi
+                    / currentDpi);
+                initialSize = new Size(width, height);
+            }
+#if doLogging
+            logger.logControls("MainForm_ResizeEnd (after," + doScale
+               + ") initialSize=" + initialSize.ToString());
+#endif
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e) {
+#if doLogging && false
+            logger.logControls("MainForm_Resize initialSize="
+                + initialSize.ToString());
+#endif
+        }
+
+        private void MainForm_SizeChanged(object sender, EventArgs e) {
+#if doLogging && false
+            logger.logControls("Form_SizeChanged");
+#endif
+        }
+
+        ////////////////////// End of Code to implement PerMonitor Scaling ////////
     }
 
     /// <summary>
@@ -331,5 +494,10 @@ namespace DpiInfo {
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool EnableNonClientDpiScaling(IntPtr hwnd);
+
     }
 }
