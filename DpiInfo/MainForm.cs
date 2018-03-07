@@ -24,20 +24,23 @@ namespace DpiInfo {
         /// <returns></returns>
         private String getAllProcessesInfo() {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Process Information");
-            sb.AppendLine();
 
-            // Get this process
-            Process currentProcess = Process.GetCurrentProcess();
-            sb.Append(getProcessInfo(currentProcess));
-            //sb.AppendLine("  Bounds: X=" + Bounds.Left + " Y=" + Bounds.Top
-            //   + " Size: " + Bounds.Width + " x " + Bounds.Height);
-            sb.AppendLine();
+            sb.AppendLine("---- Display Information ----");
+            sb.AppendLine(getDisplayInfo());
 
             // PreferExternalManifest
-            sb.AppendLine("PreferExternalManifest:");
+            sb.AppendLine("---- PreferExternalManifest ----");
             sb.AppendLine(getPreferExternalManifest());
             sb.AppendLine();
+
+            sb.AppendLine("---- Process Information ----");
+
+            //// Get this process
+            //Process currentProcess = Process.GetCurrentProcess();
+            //sb.Append(getProcessInfo(currentProcess));
+            ////sb.AppendLine("  Bounds: X=" + Bounds.Left + " Y=" + Bounds.Top
+            ////   + " Size: " + Bounds.Width + " x " + Bounds.Height);
+            //sb.AppendLine();
 
             // Get all processes running on the local computer.
             Process[] localAll = Process.GetProcesses();
@@ -64,7 +67,35 @@ namespace DpiInfo {
         }
 
         /// <summary>
-        /// get information for a process.
+        /// Gets information for all monitors
+        /// </summary>
+        /// <returns></returns>
+        private string getDisplayInfo() {
+            StringBuilder sb = new StringBuilder();
+            Screen[] screens = Screen.AllScreens;
+            foreach (Screen screen in screens) {
+                var pnt = new System.Drawing.Point(
+                    (screen.Bounds.Left + screen.Bounds.Right) / 2,
+                    (screen.Bounds.Top + screen.Bounds.Bottom) / 2);
+                var mon = NativeMethods.MonitorFromPoint(pnt,
+                    NativeMethods.MONITOR_DEFAULTTONEAREST);
+                uint dpiX, dpiY;
+                NativeMethods.GetDpiForMonitor(mon,
+                    NativeMethods.MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI,
+                    out dpiX, out dpiY);
+
+                string primary = screen.Primary ? "  (Primary)" : "";
+                sb.AppendLine("Device Name: " + screen.DeviceName + primary);
+                sb.AppendLine("Bits per Pixel: " + screen.BitsPerPixel);
+                sb.AppendLine("xDPI=" + dpiX + " yDPI=" + dpiY);
+                sb.AppendLine("Bounds: " + screen.Bounds);
+                sb.AppendLine("Working Area: " + screen.WorkingArea);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Gets information for a process.
         /// </summary>
         /// <param name="process"></param>
         /// <returns></returns>
@@ -263,6 +294,27 @@ namespace DpiInfo {
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+        internal const int MONITOR_DEFAULTTONULL = 0;
+        internal const int MONITOR_DEFAULTTOPRIMARY = 1;
+        internal const int MONITOR_DEFAULTTONEAREST = 2;
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
+        internal enum MONITOR_DPI_TYPE {
+            MDT_EFFECTIVE_DPI = 0,
+            MDT_ANGULAR_DPI = 1,
+            MDT_RAW_DPI = 2,
+            MDT_DEFAULT = MDT_EFFECTIVE_DPI
+        }
+
+        [DllImport("User32.dll")]
+        internal static extern IntPtr MonitorFromPoint([In]System.Drawing.Point pt, [In]uint dwFlags);
+
+        [DllImport("Shcore.dll")]
+        internal static extern IntPtr GetDpiForMonitor([In]IntPtr hmonitor,
+            [In]MONITOR_DPI_TYPE dpiType, [Out]out uint dpiX, [Out]out uint dpiY);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
