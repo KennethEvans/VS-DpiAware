@@ -114,10 +114,10 @@ namespace DpiInfo {
 
                 string primary = screen.Primary ? "  (Primary)" : "";
                 sb.AppendLine("Device Name: " + screen.DeviceName + primary);
-                sb.AppendLine("Bits per Pixel: " + screen.BitsPerPixel);
-                sb.AppendLine("xDPI=" + dpiX + " yDPI=" + dpiY);
-                sb.AppendLine("Bounds: " + screen.Bounds);
-                sb.AppendLine("Working Area: " + screen.WorkingArea);
+                sb.AppendLine("  Bits per Pixel: " + screen.BitsPerPixel);
+                sb.AppendLine("  xDPI=" + dpiX + " yDPI=" + dpiY);
+                sb.AppendLine("  Bounds: " + screen.Bounds);
+                sb.AppendLine("  Working Area: " + screen.WorkingArea);
             }
             return sb.ToString();
         }
@@ -369,10 +369,7 @@ namespace DpiInfo {
             base.WndProc(ref m);
         }
 
-        // External Windows functions
-
-
-        // Event handlers
+         // Event handlers
 
         private void MainForm_ResizeBegin(object sender, EventArgs e) {
 #if doLogging
