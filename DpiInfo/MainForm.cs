@@ -100,6 +100,11 @@ namespace DpiInfo {
         /// <returns></returns>
         private string getDisplayInfo() {
             StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("Monitors: " + SystemInformation.MonitorCount);
+            sb.AppendLine("Virtual Screen: " + SystemInformation.VirtualScreen);
+            sb.AppendLine("Primary Monitor Size: " + SystemInformation.PrimaryMonitorSize);
+
             Screen[] screens = Screen.AllScreens;
             foreach (Screen screen in screens) {
                 var pnt = new System.Drawing.Point(
@@ -115,7 +120,12 @@ namespace DpiInfo {
                 string primary = screen.Primary ? "  (Primary)" : "";
                 sb.AppendLine("Device Name: " + screen.DeviceName + primary);
                 sb.AppendLine("  Bits per Pixel: " + screen.BitsPerPixel);
-                sb.AppendLine("  xDPI=" + dpiX + " yDPI=" + dpiY);
+                if (dpiX == dpiY) {
+                    sb.AppendLine("  DPI: " + dpiX + " (" + (dpiX * 100 / 96) + "%)");
+                } else {
+                    sb.AppendLine("  xDPI: " + dpiX + " (" + (dpiX * 100 / 96) + "%)" +
+                        " yDPI: " + dpiY + " (" + (dpiY * 100 / 96) + "%)");
+                }
                 sb.AppendLine("  Bounds: " + screen.Bounds);
                 sb.AppendLine("  Working Area: " + screen.WorkingArea);
             }
@@ -369,7 +379,7 @@ namespace DpiInfo {
             base.WndProc(ref m);
         }
 
-         // Event handlers
+        // Event handlers
 
         private void MainForm_ResizeBegin(object sender, EventArgs e) {
 #if doLogging
