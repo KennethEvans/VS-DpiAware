@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace ArtPad {
+namespace Utils {
     public static class Utils {
         public static string LF = System.Environment.NewLine;
 
