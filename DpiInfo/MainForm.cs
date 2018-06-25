@@ -78,12 +78,18 @@ namespace DpiInfo {
                 return process1.ProcessName.CompareTo(process2.ProcessName);
             });
 
+            bool first = true;
             foreach (Process process in localAll) {
                 try {
                     try {
                         if (process.MainWindowHandle == IntPtr.Zero) continue;
                     } catch (Exception) {
                         continue;
+                    }
+                    if(first) {
+                        first = false;
+                    } else {
+                        sb.AppendLine();
                     }
                     sb.Append(getProcessInfo(process));
                 } catch (Exception ex) {
@@ -161,6 +167,9 @@ namespace DpiInfo {
                 }
             }
 
+            // Topmost
+            sb.AppendLine("  Topmost: " + getWindowIsTopmost(process.MainWindowHandle));
+
             // Main window size
             NativeMethods.RECT rect;
             if (!NativeMethods.GetWindowRect(new HandleRef(this, process.MainWindowHandle), out rect)) {
@@ -215,6 +224,18 @@ namespace DpiInfo {
             sb.AppendLine("  DPI Awareness: " + dpiAwareness);
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Gets if window is topmost for the given window handle.
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        public static bool getWindowIsTopmost(IntPtr hWnd) {
+            IntPtr exStyle = NativeMethods.GetWindowLongPtr(hWnd,
+                NativeMethods.GWL_EXSTYLE);
+            return ((long)exStyle & NativeMethods.WS_EX_TOPMOST) ==
+                NativeMethods.WS_EX_TOPMOST;
         }
 
         /// <summary>
@@ -506,5 +527,22 @@ namespace DpiInfo {
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool EnableNonClientDpiScaling(IntPtr hwnd);
 
+        internal const int GWL_EXSTYLE = -20;
+        internal const long WS_EX_TOPMOST = 0x00000008;
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+        internal static extern IntPtr GetWindowLongPtr32(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
+        internal static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+
+        // This static method is required because Win32 does not support
+        // GetWindowLongPtr directly
+        internal static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex) {
+            if (IntPtr.Size == 8)
+                return GetWindowLongPtr64(hWnd, nIndex);
+            else
+                return GetWindowLongPtr32(hWnd, nIndex);
+        }
     }
 }
