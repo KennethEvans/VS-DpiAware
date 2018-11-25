@@ -1,23 +1,20 @@
-# Krita Brush Info
+# DPI Info
 
-Krita Brush Info is a C# Windows application that reads Krita brush configurations and displays them in a readable form. It can also compare two brushes and show the differences. This can be useful for seeing the structure of the brush parameters and to easily compare the differences between two brushes. It is easier to compare brushes this way than by hunting through the brush properties dialog in Krita, and it may give you some insight into how Krita brushes are configured.
+DPI Info is a C# Windows application that displays the DPI awareness of running processes as well as other information that may be useful. There has been an ongoing problem with running applications on high-resolution monitors in Windows. One often gets a user interface that is too small to read comfortably or one that is pixelated. The options that Microsoft has provided to deal with these issues have improved with new major updates to Windows, but it may be helpful to have this information to decide what to do.
 
-It can read .kpp brush preset files or get them from a .bundle resource bundle.
+DPI Info lists information about each process that has a Main Window. This information includes the Main Window title, the window handle, the process id (PID), whether it is a 32-bit or 64-bit process, whether it is a topmost window, the window position and size, its DPI, its Process DPI Awareness, its DPI Awareness Context, and its DPI Awareness. It also displays information about the Monitors attached to the system and whether HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\SideBySide\PreferExternalManifest is set in the registry.
 
-See http://kenevans.net/opensource/KritaBrushInfo/Help/Overview.html
+See http://kenevans.net/opensource/DpiInfo/Help/Overview.html
 
 **Installation**
 
 If you are installing from a download, just unzip the files into a directory somewhere convenient. Then run it from there. If you are installing from a build, copy these files and directories from the bin/Release directory to a convenient directory.
 
-* KritaBrushInfo.exe
+* DpiInfo.exe
 * Help
 
 To uninstall, just delete these files.
 
-You will also need to install ExifTool by Paul Harvey to read the EXIF information in the .kpp preset file. This is free software.  You can redistribute it and/or modify it under the same terms as Perl, which it uses.  The ExifTool site is:
-
-https://www.sno.phy.queensu.ca/~phil/exiftool
 
 **More Information**
 
