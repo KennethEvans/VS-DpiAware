@@ -29,6 +29,7 @@
             this.buttonRefresh = new System.Windows.Forms.Button();
             this.buttonQuit = new System.Windows.Forms.Button();
             this.textBoxInfo = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanelTop.SuspendLayout();
             this.flowLayoutPanelButtons.SuspendLayout();
             this.SuspendLayout();
@@ -56,11 +57,12 @@
             this.flowLayoutPanelButtons.AutoSize = true;
             this.flowLayoutPanelButtons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.flowLayoutPanelButtons.BackColor = System.Drawing.SystemColors.Control;
+            this.flowLayoutPanelButtons.Controls.Add(this.button1);
             this.flowLayoutPanelButtons.Controls.Add(this.buttonRefresh);
             this.flowLayoutPanelButtons.Controls.Add(this.buttonQuit);
-            this.flowLayoutPanelButtons.Location = new System.Drawing.Point(552, 861);
+            this.flowLayoutPanelButtons.Location = new System.Drawing.Point(477, 861);
             this.flowLayoutPanelButtons.Name = "flowLayoutPanelButtons";
-            this.flowLayoutPanelButtons.Size = new System.Drawing.Size(214, 48);
+            this.flowLayoutPanelButtons.Size = new System.Drawing.Size(363, 48);
             this.flowLayoutPanelButtons.TabIndex = 0;
             this.flowLayoutPanelButtons.WrapContents = false;
             // 
@@ -69,7 +71,7 @@
             this.buttonRefresh.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.buttonRefresh.AutoSize = true;
             this.buttonRefresh.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.buttonRefresh.Location = new System.Drawing.Point(3, 3);
+            this.buttonRefresh.Location = new System.Drawing.Point(152, 3);
             this.buttonRefresh.Name = "buttonRefresh";
             this.buttonRefresh.Size = new System.Drawing.Size(124, 42);
             this.buttonRefresh.TabIndex = 1;
@@ -82,7 +84,7 @@
             this.buttonQuit.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.buttonQuit.AutoSize = true;
             this.buttonQuit.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.buttonQuit.Location = new System.Drawing.Point(133, 3);
+            this.buttonQuit.Location = new System.Drawing.Point(282, 3);
             this.buttonQuit.Name = "buttonQuit";
             this.buttonQuit.Size = new System.Drawing.Size(78, 42);
             this.buttonQuit.TabIndex = 0;
@@ -99,6 +101,19 @@
             this.textBoxInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBoxInfo.Size = new System.Drawing.Size(1312, 852);
             this.textBoxInfo.TabIndex = 1;
+            // 
+            // button1
+            // 
+            this.button1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.button1.AutoSize = true;
+            this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button1.Location = new System.Drawing.Point(3, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(143, 42);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "Overview";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.OnOverviewClick);
             // 
             // MainForm
             // 
@@ -130,6 +145,7 @@
         private System.Windows.Forms.Button buttonQuit;
         private System.Windows.Forms.Button buttonRefresh;
         private System.Windows.Forms.TextBox textBoxInfo;
+        private System.Windows.Forms.Button button1;
     }
 }
 

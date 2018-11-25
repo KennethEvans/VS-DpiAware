@@ -21,6 +21,8 @@ namespace DpiInfo {
         private float previousDpi;
         private Font initialFont;
         private Size initialSize;
+        private static ScrolledHTMLDialog overviewDlg;
+
 #if doLogging
         private Logger logger;
 #endif
@@ -282,6 +284,23 @@ namespace DpiInfo {
         /// <param name="e"></param>
         private void onRefreshClick(object sender, EventArgs e) {
             refresh();
+        }
+
+        /// <summary>
+        /// Handler for Overview button click.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnOverviewClick(object sender, EventArgs e) {
+            // Create, show, or set visible the overview dialog as appropriate
+            if (overviewDlg == null) {
+                MainForm app = (MainForm)FindForm().FindForm();
+                overviewDlg = new ScrolledHTMLDialog(
+                    Utils.Utils.getDpiAdjustedSize(app, new Size(800, 600)));
+                overviewDlg.Show();
+            } else {
+                overviewDlg.Visible = true;
+            }
         }
 
         /// <summary>
