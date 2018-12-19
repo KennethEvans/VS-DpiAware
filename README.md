@@ -4,7 +4,7 @@ DPI Info is a C# Windows application that displays the DPI awareness of running 
 
 DPI Info lists information about each process that has a Main Window. This information includes the Main Window title, the window handle, the process id (PID), whether it is a 32-bit or 64-bit process, whether it is a topmost window, the window position and size, its DPI, its Process DPI Awareness, its DPI Awareness Context, and its DPI Awareness. It also displays information about the Monitors attached to the system and whether HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\SideBySide\PreferExternalManifest is set in the registry.
 
-See http://kenevans.net/opensource/DpiInfo/Help/Overview.html
+See https://kenevans.net/opensource/DpiInfo/Help/Overview.html
 
 **Installation**
 
