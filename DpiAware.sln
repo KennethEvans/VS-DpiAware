@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DpiInfo", "DpiInfo\DpiInfo.csproj", "{B372F6C7-C5D4-4A7E-8D9A-A1C04DA0DB0D}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DpiInfoTest", "DpiInfoTest\DpiInfoTest.vcxproj", "{A676D044-AAFC-4110-8899-D53FB6B6FCFB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7BBAFF63-01A5-4281-A140-6B8C9ACFEEC2}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DPI Info", "DPI Info\DPI Info.csproj", "{B372F6C7-C5D4-4A7E-8D9A-A1C04DA0DB0D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DPI Info Test", "DPI Info Test\DpiInfoTest.vcxproj", "{A676D044-AAFC-4110-8899-D53FB6B6FCFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +47,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B372F6C7-C5D4-4A7E-8D9A-A1C04DA0DB0D} = {7BBAFF63-01A5-4281-A140-6B8C9ACFEEC2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B59ED30-4226-49FE-8A0B-01F2D1564908}
